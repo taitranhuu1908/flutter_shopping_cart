@@ -31,6 +31,10 @@ dependencies:
   provider:
   path_provider:
   http:
+  json_serializable: 
+  flutter_bloc:
+  equatable:
+  build_runner: 
   flutter:
     sdk: flutter
 

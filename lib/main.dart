@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
+import 'package:shopping_cart/bloc/cart/bloc/cart_bloc.dart';
 import 'package:shopping_cart/provider/cart_provider.dart';
 import 'package:shopping_cart/provider/product_provider.dart';
+import 'package:shopping_cart/screens/cart_screen.dart';
 import 'package:shopping_cart/screens/home_screen.dart';
+import 'package:shopping_cart/services/product_service.dart';
 
 void main() {
   runApp(const MyApp());
@@ -12,18 +16,40 @@ class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-        providers: [
-          ChangeNotifierProvider(create: (context) => ProductProvider()),
-          ChangeNotifierProvider(create: (context) => CartProvider()),
-        ],
-        child: MaterialApp(
-          debugShowCheckedModeBanner: false,
-          title: 'Store',
-          home: const HomeScreen(),
-          theme: ThemeData(
-            primarySwatch: Colors.blue,
-          ),
-        ));
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Store',
+      home: MultiRepositoryProvider(
+        providers: [RepositoryProvider(create: (context) => ProductService())],
+        child: const HomeScreen(),
+      ),
+      onGenerateRoute: (RouteSettings settings) {
+        switch (settings.name) {
+          case '/home':
+            return MaterialPageRoute(builder: (_) {
+              return MultiRepositoryProvider(
+                providers: [
+                  RepositoryProvider(create: (context) => ProductService())
+                ],
+                child: const HomeScreen(),
+              );
+            });
+          case '/cart':
+            return MaterialPageRoute(builder: (_) {
+              return MultiRepositoryProvider(
+                providers: [
+                  RepositoryProvider(create: (context) => ProductService()),
+                ],
+                child: const CartScreen(),
+              );
+            });
+          default:
+            return MaterialPageRoute(builder: (_) => Container());
+        }
+      },
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+    );
   }
 }
