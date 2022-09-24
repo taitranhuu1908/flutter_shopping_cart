@@ -16,39 +16,48 @@ class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Store',
-      home: MultiRepositoryProvider(
-        providers: [RepositoryProvider(create: (context) => ProductService())],
-        child: const HomeScreen(),
-      ),
-      onGenerateRoute: (RouteSettings settings) {
-        switch (settings.name) {
-          case '/home':
-            return MaterialPageRoute(builder: (_) {
-              return MultiRepositoryProvider(
-                providers: [
-                  RepositoryProvider(create: (context) => ProductService())
-                ],
-                child: const HomeScreen(),
-              );
-            });
-          case '/cart':
-            return MaterialPageRoute(builder: (_) {
-              return MultiRepositoryProvider(
-                providers: [
-                  RepositoryProvider(create: (context) => ProductService()),
-                ],
-                child: const CartScreen(),
-              );
-            });
-          default:
-            return MaterialPageRoute(builder: (_) => Container());
-        }
-      },
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (_) => CartBloc(),
+        ),
+      ],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Store',
+        home: MultiRepositoryProvider(
+          providers: [
+            RepositoryProvider(create: (context) => ProductService())
+          ],
+          child: const HomeScreen(),
+        ),
+        onGenerateRoute: (RouteSettings settings) {
+          switch (settings.name) {
+            case '/home':
+              return MaterialPageRoute(builder: (_) {
+                return MultiRepositoryProvider(
+                  providers: [
+                    RepositoryProvider(create: (context) => ProductService())
+                  ],
+                  child: const HomeScreen(),
+                );
+              });
+            case '/cart':
+              return MaterialPageRoute(builder: (_) {
+                return MultiRepositoryProvider(
+                  providers: [
+                    RepositoryProvider(create: (context) => ProductService()),
+                  ],
+                  child: const CartScreen(),
+                );
+              });
+            default:
+              return MaterialPageRoute(builder: (_) => Container());
+          }
+        },
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
       ),
     );
   }

@@ -20,25 +20,69 @@ class _CartScreenState extends State<CartScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(create: (_) => CartBloc()),
-      ],
-      child: Scaffold(
-        appBar: AppBar(
-          centerTitle: true,
-          title: const Text('Shopping Carts'),
-        ),
-        body: BlocBuilder<CartBloc, CartState>(
-          builder: (context, state) {
-            if (state is ListCartState) {
-              return Container(
-                child: Text("${state.carts.length}"),
-              );
-            }
-            return Container();
-          },
-        ),
+    return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        title: const Text('Shopping Carts'),
+      ),
+      body: BlocBuilder<CartBloc, ListCartState>(
+        builder: (context, state) {
+          return Column(
+            children: [
+              state.carts.length <= 0
+                  ? const Expanded(
+                      child: Center(
+                      child: Text('Cart is empty'),
+                    ))
+                  : Expanded(
+                      child: ListView.builder(
+                        itemCount: state.carts.length,
+                        itemBuilder: (context, index) {
+                          return Card(
+                            child: ListTile(
+                              leading: Image.network(
+                                state.carts[index].image!,
+                                width: 100,
+                                height: 100,
+                              ),
+                              title: Text(
+                                state.carts[index].title!,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              subtitle:
+                                  Text("${state.carts[index].price!} VND"),
+                              trailing: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  IconButton(
+                                    onPressed: () {
+                                      // cart.decrementQuantity(index);
+                                    },
+                                    icon: const Icon(Icons.remove),
+                                  ),
+                                  Text(state.carts[index].quantity.toString()),
+                                  IconButton(
+                                    onPressed: () {
+                                      // cart.incrementQuantity(index);
+                                    },
+                                    icon: const Icon(Icons.add),
+                                  ),
+                                  IconButton(
+                                    onPressed: () {
+                                      // cart.removeCart(index);
+                                    },
+                                    icon: const Icon(Icons.delete),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+            ],
+          );
+        },
       ),
     );
     // return Scaffold(
@@ -53,55 +97,55 @@ class _CartScreenState extends State<CartScreen> {
     //               child: Center(
     //               child: Text('Cart is empty'),
     //             ))
-    //           : Expanded(
-    //               child: ListView.builder(
-    //                 itemCount: cart.getCartList().length,
-    //                 itemBuilder: (context, index) {
-    //                   return Card(
-    //                     child: ListTile(
-    //                       leading: Image.network(
-    //                         cart.getCartList()[index].image!,
-    //                         width: 100,
-    //                         height: 100,
-    //                       ),
-    //                       title: Text(
-    //                         cart.getCartList()[index].title!,
-    //                         overflow: TextOverflow.ellipsis,
-    //                       ),
-    //                       subtitle:
-    //                           Text("${cart.getCartList()[index].price!} VND"),
-    //                       trailing: Row(
-    //                         mainAxisSize: MainAxisSize.min,
-    //                         children: [
-    //                           IconButton(
-    //                             onPressed: () {
-    //                               cart.decrementQuantity(index);
-    //                             },
-    //                             icon: const Icon(Icons.remove),
-    //                           ),
-    //                           Text(cart
-    //                               .getCartList()[index]
-    //                               .quantity
-    //                               .toString()),
-    //                           IconButton(
-    //                             onPressed: () {
-    //                               cart.incrementQuantity(index);
-    //                             },
-    //                             icon: const Icon(Icons.add),
-    //                           ),
-    //                           IconButton(
-    //                             onPressed: () {
-    //                               cart.removeCart(index);
-    //                             },
-    //                             icon: const Icon(Icons.delete),
-    //                           ),
-    //                         ],
-    //                       ),
-    //                     ),
-    //                   );
-    //                 },
-    //               ),
+    // : Expanded(
+    //     child: ListView.builder(
+    //       itemCount: cart.getCartList().length,
+    //       itemBuilder: (context, index) {
+    //         return Card(
+    //           child: ListTile(
+    //             leading: Image.network(
+    //               cart.getCartList()[index].image!,
+    //               width: 100,
+    //               height: 100,
     //             ),
+    //             title: Text(
+    //               cart.getCartList()[index].title!,
+    //               overflow: TextOverflow.ellipsis,
+    //             ),
+    //             subtitle:
+    //                 Text("${cart.getCartList()[index].price!} VND"),
+    //             trailing: Row(
+    //               mainAxisSize: MainAxisSize.min,
+    //               children: [
+    //                 IconButton(
+    //                   onPressed: () {
+    //                     cart.decrementQuantity(index);
+    //                   },
+    //                   icon: const Icon(Icons.remove),
+    //                 ),
+    //                 Text(cart
+    //                     .getCartList()[index]
+    //                     .quantity
+    //                     .toString()),
+    //                 IconButton(
+    //                   onPressed: () {
+    //                     cart.incrementQuantity(index);
+    //                   },
+    //                   icon: const Icon(Icons.add),
+    //                 ),
+    //                 IconButton(
+    //                   onPressed: () {
+    //                     cart.removeCart(index);
+    //                   },
+    //                   icon: const Icon(Icons.delete),
+    //                 ),
+    //               ],
+    //             ),
+    //           ),
+    //         );
+    //       },
+    //     ),
+    //   ),
     //       Padding(
     //         padding: const EdgeInsets.only(left: 20, right: 20),
     //         child: Row(
