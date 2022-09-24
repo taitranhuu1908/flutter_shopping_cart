@@ -5,6 +5,7 @@ import 'package:shopping_cart/bloc/cart/bloc/cart_bloc.dart';
 import 'package:shopping_cart/bloc/product/bloc/product_bloc.dart';
 import 'package:shopping_cart/model/cart.dart';
 import 'package:shopping_cart/services/product_service.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 import 'cart_screen.dart';
 
@@ -18,6 +19,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  FToast fToast = FToast();
 
   static const List<Tab> tabs = <Tab>[
     Tab(
@@ -32,11 +34,14 @@ class _HomeScreenState extends State<HomeScreen>
   void initState() {
     super.initState();
     _tabController = TabController(vsync: this, length: tabs.length);
+    fToast.init(context);
   }
 
   @override
   Widget build(BuildContext context) {
-    var size = MediaQuery.of(context).size;
+    var size = MediaQuery
+        .of(context)
+        .size;
     final double itemHeight = (size.height - kToolbarHeight - 24) / 2;
     final double itemWidth = size.width / 2;
 
@@ -56,11 +61,11 @@ class _HomeScreenState extends State<HomeScreen>
       );
     }
 
-    listView(listProduct) {
+    listView(context, listProduct) {
       return ListView.builder(
         itemCount: listProduct.length,
         itemBuilder: (context, index) {
-          return listItem(listProduct[index]);
+          return listItem(context, listProduct[index]);
         },
       );
     }
@@ -68,9 +73,11 @@ class _HomeScreenState extends State<HomeScreen>
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-            create: (_) => ProductBloc(
-                  RepositoryProvider.of<ProductService>(context),
-                )..add(FindAllProductEvent())),
+            create: (_) =>
+            ProductBloc(
+              RepositoryProvider.of<ProductService>(context),
+            )
+              ..add(FindAllProductEvent())),
       ],
       child: DefaultTabController(
         length: 2,
@@ -109,7 +116,7 @@ class _HomeScreenState extends State<HomeScreen>
             ),
           ),
           body:
-              BlocBuilder<ProductBloc, ProductState>(builder: (context, state) {
+          BlocBuilder<ProductBloc, ProductState>(builder: (context, state) {
             if (state is ListProductLoadingState) {
               return const Center(
                 child: CircularProgressIndicator(),
@@ -121,7 +128,7 @@ class _HomeScreenState extends State<HomeScreen>
                 controller: _tabController,
                 children: [
                   gridView(context, state.products),
-                  listView(state.products),
+                  listView(context, state.products),
                 ],
               );
             }
@@ -174,6 +181,11 @@ class _HomeScreenState extends State<HomeScreen>
                   onPressed: () {
                     BlocProvider.of<CartBloc>(context).add(AddCartEvent(
                         Cart(product: product, quantity: 1, totalPrice: 0.0)));
+                    fToast.showToast(
+                      child: _toastSuccess("Add Cart Success!!"),
+                      gravity: ToastGravity.BOTTOM,
+                      toastDuration: Duration(seconds: 2),
+                    );
                   },
                   style: ElevatedButton.styleFrom(
                       primary: Colors.blue,
@@ -189,7 +201,29 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
-  listItem(product) {
+  _toastSuccess(message) {
+    fToast.removeCustomToast();
+    return Container(
+      padding: const EdgeInsets.symmetric(
+          horizontal: 24.0, vertical: 12.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(25.0),
+        color: Colors.greenAccent,
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.check, color: Colors.white,),
+          const SizedBox(
+            width: 12.0,
+          ),
+          Text("$message", style: const TextStyle(color: Colors.white,),),
+        ],
+      ),
+    );
+  }
+
+  listItem(context, product) {
     return Card(
       child: ListTile(
         leading: Image.network(
@@ -207,7 +241,9 @@ class _HomeScreenState extends State<HomeScreen>
         subtitle: Text("${product.price!} VND"),
         trailing: IconButton(
           onPressed: () {
-            // cartProvider.addCart(productProvider.listProduct[index]);
+            BlocProvider.of<CartBloc>(context).add(AddCartEvent(
+                Cart(product: product, quantity: 1, totalPrice: 0)));
+            _toastSuccess("Add Cart Success!!");
           },
           icon: const Icon(Icons.add_shopping_cart_rounded),
         ),

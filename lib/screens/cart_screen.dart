@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:provider/provider.dart';
 import 'package:shopping_cart/bloc/cart/bloc/cart_bloc.dart';
-import 'package:shopping_cart/model/product.dart';
-import 'package:shopping_cart/provider/cart_provider.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class CartScreen extends StatefulWidget {
   const CartScreen({Key? key}) : super(key: key);
@@ -13,9 +11,12 @@ class CartScreen extends StatefulWidget {
 }
 
 class _CartScreenState extends State<CartScreen> {
+  FToast fToast = FToast();
+
   @override
   void initState() {
     super.initState();
+    fToast.init(context);
   }
 
   @override
@@ -50,26 +51,34 @@ class _CartScreenState extends State<CartScreen> {
                                 overflow: TextOverflow.ellipsis,
                               ),
                               subtitle: Text(
-                                  "${state.carts[index].product!.price!} VND"),
+                                  "${state.carts[index].product!.price!.toStringAsFixed(2)} VND"),
                               trailing: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   IconButton(
                                     onPressed: () {
-                                      BlocProvider.of<CartBloc>(context).add(DecrementQuantityEvent(state.carts[index].product!));
+                                      BlocProvider.of<CartBloc>(context).add(
+                                          DecrementQuantityEvent(
+                                              state.carts[index].product!));
                                     },
                                     icon: const Icon(Icons.remove),
                                   ),
                                   Text("${state.carts[index].quantity}"),
                                   IconButton(
                                     onPressed: () {
-                                      BlocProvider.of<CartBloc>(context).add(IncrementQuantityEvent(state.carts[index].product!));
+                                      BlocProvider.of<CartBloc>(context).add(
+                                          IncrementQuantityEvent(
+                                              state.carts[index].product!));
                                     },
                                     icon: const Icon(Icons.add),
                                   ),
                                   IconButton(
                                     onPressed: () {
-                                      // cart.removeCart(index);
+                                      BlocProvider.of<CartBloc>(context).add(
+                                          RemoveCartEvent(
+                                              state.carts[index].product!));
+                                      _toast(
+                                          "Remove Product Success!!", "danger");
                                     },
                                     icon: const Icon(Icons.delete),
                                   ),
@@ -112,12 +121,11 @@ class _CartScreenState extends State<CartScreen> {
               Container(
                 height: 50,
                 width: double.infinity,
-                margin: EdgeInsets.only(top: 20, bottom: 20),
-                padding: EdgeInsets.only(left: 20, right: 20),
+                margin: const EdgeInsets.only(top: 20, bottom: 20),
+                padding: const EdgeInsets.only(left: 20, right: 20),
                 child: ElevatedButton(
                   onPressed: () {
-                    // List carts = cart.getCartList();
-                    List carts = [];
+                    List carts = state.carts;
                     int amountCart = carts.length;
                     if (carts.isEmpty) {
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -145,6 +153,7 @@ class _CartScreenState extends State<CartScreen> {
                                 child: const Text('Close'),
                                 onPressed: () {
                                   Navigator.of(context).pop();
+                                  BlocProvider.of<CartBloc>(context).add(const ClearCartEvent());
                                 },
                               ),
                             ],
@@ -307,5 +316,34 @@ class _CartScreenState extends State<CartScreen> {
     //     ],
     //   ),
     // );
+  }
+
+  _toast(message, type) {
+    fToast.removeCustomToast();
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(25.0),
+        color: Colors.red,
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(
+            Icons.check,
+            color: Colors.white,
+          ),
+          const SizedBox(
+            width: 12.0,
+          ),
+          Text(
+            "$message",
+            style: const TextStyle(
+              color: Colors.white,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

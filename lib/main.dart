@@ -6,6 +6,7 @@ import 'package:shopping_cart/provider/cart_provider.dart';
 import 'package:shopping_cart/provider/product_provider.dart';
 import 'package:shopping_cart/screens/cart_screen.dart';
 import 'package:shopping_cart/screens/home_screen.dart';
+import 'package:shopping_cart/screens/login_screen.dart';
 import 'package:shopping_cart/services/product_service.dart';
 
 void main() {
@@ -25,12 +26,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Store',
-        home: MultiRepositoryProvider(
-          providers: [
-            RepositoryProvider(create: (context) => ProductService())
-          ],
-          child: const HomeScreen(),
-        ),
+        home: const LoginScreen(),
         onGenerateRoute: (RouteSettings settings) {
           switch (settings.name) {
             case '/home':
@@ -50,6 +46,10 @@ class MyApp extends StatelessWidget {
                   ],
                   child: const CartScreen(),
                 );
+              });
+            case '/login':
+              return MaterialPageRoute(builder: (_) {
+                return const LoginScreen();
               });
             default:
               return MaterialPageRoute(builder: (_) => Container());

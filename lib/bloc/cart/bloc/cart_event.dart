@@ -17,12 +17,12 @@ class AddCartEvent extends CartEvent {
 }
 
 class RemoveCartEvent extends CartEvent {
-  int index;
+  Product product;
 
-  RemoveCartEvent(this.index);
+  RemoveCartEvent(this.product);
 
   @override
-  List<Object> get props => [index];
+  List<Object> get props => [product];
 }
 
 class ClearCartEvent extends CartEvent {
@@ -48,3 +48,4 @@ class DecrementQuantityEvent extends CartEvent {
   @override
   List<Object> get props => [product];
 }
+
