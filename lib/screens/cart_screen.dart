@@ -29,7 +29,7 @@ class _CartScreenState extends State<CartScreen> {
         builder: (context, state) {
           return Column(
             children: [
-              state.carts.length <= 0
+              state.carts.isEmpty
                   ? const Expanded(
                       child: Center(
                       child: Text('Cart is empty'),
@@ -56,14 +56,14 @@ class _CartScreenState extends State<CartScreen> {
                                 children: [
                                   IconButton(
                                     onPressed: () {
-                                      // cart.decrementQuantity(index);
+                                      BlocProvider.of<CartBloc>(context).add(DecrementQuantityEvent(state.carts[index].product!));
                                     },
                                     icon: const Icon(Icons.remove),
                                   ),
                                   Text("${state.carts[index].quantity}"),
                                   IconButton(
                                     onPressed: () {
-                                      // cart.incrementQuantity(index);
+                                      BlocProvider.of<CartBloc>(context).add(IncrementQuantityEvent(state.carts[index].product!));
                                     },
                                     icon: const Icon(Icons.add),
                                   ),

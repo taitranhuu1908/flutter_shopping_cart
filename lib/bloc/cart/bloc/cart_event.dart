@@ -31,3 +31,20 @@ class ClearCartEvent extends CartEvent {
   @override
   List<Object> get props => [];
 }
+
+class IncrementQuantityEvent extends CartEvent {
+  Product product;
+
+  IncrementQuantityEvent(this.product);
+
+  @override
+  List<Object> get props => [product];
+}
+class DecrementQuantityEvent extends CartEvent {
+  Product product;
+
+  DecrementQuantityEvent(this.product);
+
+  @override
+  List<Object> get props => [product];
+}

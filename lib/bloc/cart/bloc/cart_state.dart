@@ -20,5 +20,5 @@ class ListCartState extends CartState {
   ListCartState({this.carts = const <Cart>[]});
 
   @override
-  List<Object> get props => [carts];
+  List<Object> get props => [carts, totalPrice];
 }
