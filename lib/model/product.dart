@@ -9,7 +9,7 @@ class Product {
   @JsonValue("title")
   String? title;
   @JsonValue("price")
-  String? price;
+  num? price;
   @JsonValue("description")
   String? description;
   @JsonValue("image")

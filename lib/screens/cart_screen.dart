@@ -41,16 +41,16 @@ class _CartScreenState extends State<CartScreen> {
                           return Card(
                             child: ListTile(
                               leading: Image.network(
-                                state.carts[index].image!,
+                                state.carts[index].product!.image!,
                                 width: 100,
                                 height: 100,
                               ),
                               title: Text(
-                                state.carts[index].title!,
+                                state.carts[index].product!.title!,
                                 overflow: TextOverflow.ellipsis,
                               ),
-                              subtitle:
-                                  Text("${state.carts[index].price!} VND"),
+                              subtitle: Text(
+                                  "${state.carts[index].product!.price!} VND"),
                               trailing: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
@@ -60,7 +60,7 @@ class _CartScreenState extends State<CartScreen> {
                                     },
                                     icon: const Icon(Icons.remove),
                                   ),
-                                  Text(state.carts[index].quantity.toString()),
+                                  Text("${state.carts[index].quantity}"),
                                   IconButton(
                                     onPressed: () {
                                       // cart.incrementQuantity(index);
@@ -80,6 +80,86 @@ class _CartScreenState extends State<CartScreen> {
                         },
                       ),
                     ),
+              Padding(
+                padding: const EdgeInsets.only(left: 20, right: 20),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.only(left: 10.0),
+                      child: Text(
+                        'Total Price',
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(right: 10.0),
+                      child: Text(
+                        // '${cart.totalPrice.toStringAsFixed(2).toString()} VND',
+                        '${state.totalPrice} VND',
+                        style: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    )
+                  ],
+                ),
+              ),
+              Container(
+                height: 50,
+                width: double.infinity,
+                margin: EdgeInsets.only(top: 20, bottom: 20),
+                padding: EdgeInsets.only(left: 20, right: 20),
+                child: ElevatedButton(
+                  onPressed: () {
+                    // List carts = cart.getCartList();
+                    List carts = [];
+                    int amountCart = carts.length;
+                    if (carts.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Cart is empty')));
+                    } else {
+                      showDialog<void>(
+                        context: context,
+                        barrierDismissible: false, // user must tap button!
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: const Text('Thanks you for shopping'),
+                            content: SingleChildScrollView(
+                              child: ListBody(
+                                children: <Widget>[
+                                  Text("You have ordered $amountCart products"),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  const Text('Thank you for your purchase'),
+                                ],
+                              ),
+                            ),
+                            actions: <Widget>[
+                              TextButton(
+                                child: const Text('Close'),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                      // cart.clearCart();
+                    }
+                  },
+                  style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all(Colors.blue)),
+                  child: const Text('Check Out',
+                      style: TextStyle(color: Colors.white)),
+                ),
+              ),
             ],
           );
         },

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shopping_cart/bloc/cart/bloc/cart_bloc.dart';
 import 'package:shopping_cart/bloc/product/bloc/product_bloc.dart';
+import 'package:shopping_cart/model/cart.dart';
 import 'package:shopping_cart/services/product_service.dart';
 
 import 'cart_screen.dart';
@@ -65,70 +66,71 @@ class _HomeScreenState extends State<HomeScreen>
     }
 
     return MultiBlocProvider(
-        providers: [
-          BlocProvider(
-              create: (_) => ProductBloc(
-                    RepositoryProvider.of<ProductService>(context),
-                  )..add(FindAllProductEvent())),
-        ],
-        child: DefaultTabController(
-          length: 2,
-          child: Scaffold(
-            appBar: AppBar(
-              title: const Text("Store api"),
-              actions: [
-                Padding(
-                  padding: const EdgeInsets.all(10),
-                  child: Badge(
-                    shape: BadgeShape.circle,
-                    badgeColor: Colors.white,
-                    badgeContent: BlocBuilder<CartBloc, CartState>(
-                      builder: (context, state) {
-                        if (state is ListCartState) {
-                          return Text("${state.carts.length}");
-                        }
-                        return const Text("");
-                      },
-                    ),
-                    child: IconButton(
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const CartScreen()));
-                      },
-                      icon: const Icon(Icons.shopping_cart),
-                    ),
+      providers: [
+        BlocProvider(
+            create: (_) => ProductBloc(
+                  RepositoryProvider.of<ProductService>(context),
+                )..add(FindAllProductEvent())),
+      ],
+      child: DefaultTabController(
+        length: 2,
+        child: Scaffold(
+          appBar: AppBar(
+            title: const Text("Store api"),
+            actions: [
+              Padding(
+                padding: const EdgeInsets.all(10),
+                child: Badge(
+                  shape: BadgeShape.circle,
+                  badgeColor: Colors.white,
+                  badgeContent: BlocBuilder<CartBloc, CartState>(
+                    builder: (context, state) {
+                      if (state is ListCartState) {
+                        return Text("${state.carts.length}");
+                      }
+                      return const Text("");
+                    },
                   ),
-                )
-              ],
-              bottom: TabBar(
-                tabs: tabs,
-                controller: _tabController,
-              ),
+                  child: IconButton(
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const CartScreen()));
+                    },
+                    icon: const Icon(Icons.shopping_cart),
+                  ),
+                ),
+              )
+            ],
+            bottom: TabBar(
+              tabs: tabs,
+              controller: _tabController,
             ),
-            body: BlocBuilder<ProductBloc, ProductState>(
-                builder: (context, state) {
-              if (state is ListProductLoadingState) {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
-              }
-
-              if (state is ListProductState) {
-                return TabBarView(
-                  controller: _tabController,
-                  children: [
-                    gridView(context, state.products),
-                    listView(state.products),
-                  ],
-                );
-              }
-
-              return Container();
-            }),
           ),
-        ));
+          body:
+              BlocBuilder<ProductBloc, ProductState>(builder: (context, state) {
+            if (state is ListProductLoadingState) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+
+            if (state is ListProductState) {
+              return TabBarView(
+                controller: _tabController,
+                children: [
+                  gridView(context, state.products),
+                  listView(state.products),
+                ],
+              );
+            }
+
+            return Container();
+          }),
+        ),
+      ),
+    );
   }
 
   gridItem(context, product) {
@@ -170,8 +172,8 @@ class _HomeScreenState extends State<HomeScreen>
               child: Center(
                 child: ElevatedButton(
                   onPressed: () {
-                    BlocProvider.of<CartBloc>(context)
-                        .add(AddCartEvent(product));
+                    BlocProvider.of<CartBloc>(context).add(AddCartEvent(
+                        Cart(product: product, quantity: 1, totalPrice: 0.0)));
                   },
                   style: ElevatedButton.styleFrom(
                       primary: Colors.blue,

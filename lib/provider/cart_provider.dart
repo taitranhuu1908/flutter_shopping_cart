@@ -6,8 +6,8 @@ class CartProvider with ChangeNotifier {
   int _quantity = 1;
   int get counter => _counter;
   int get quantity => _quantity;
-  double _totalPrice = 0.0;
-  double get totalPrice => _totalPrice;
+  num _totalPrice = 0.0;
+  num get totalPrice => _totalPrice;
 
   List<Product> cart = [];
 
@@ -18,7 +18,7 @@ class CartProvider with ChangeNotifier {
       cart.add(product);
       _counter++;
       product.quantity = _quantity;
-      _totalPrice += double.parse(product.price!);
+      _totalPrice += (product.price!);
       notifyListeners();
     }
   }
@@ -34,19 +34,19 @@ class CartProvider with ChangeNotifier {
   void decrementQuantity(int index) {
     if (cart[index].quantity! > 1) {
       cart[index].quantity = cart[index].quantity! - 1;
-      _totalPrice -= double.parse(cart[index].price!);
+      _totalPrice -= (cart[index].price!);
       notifyListeners();
     }
   }
 
   void incrementQuantity(int index) {
     cart[index].quantity = cart[index].quantity! + 1;
-    _totalPrice += double.parse(cart[index].price!);
+    _totalPrice += (cart[index].price!);
     notifyListeners();
   }
 
   void removeCart(int index) {
-    _totalPrice -= double.parse(cart[index].price!) * cart[index].quantity!;
+    _totalPrice -= (cart[index].price!) * cart[index].quantity!;
     cart.removeAt(index);
     _counter--;
     notifyListeners();
