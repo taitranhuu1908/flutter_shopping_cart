@@ -1,8 +1,11 @@
+import 'dart:js';
+
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shopping_cart/bloc/cart/bloc/cart_bloc.dart';
 import 'package:shopping_cart/bloc/product/bloc/product_bloc.dart';
+import 'package:shopping_cart/bloc/user/bloc/user_bloc.dart';
 import 'package:shopping_cart/model/cart.dart';
 import 'package:shopping_cart/services/product_service.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -34,16 +37,14 @@ class _HomeScreenState extends State<HomeScreen>
   void initState() {
     super.initState();
     _tabController = TabController(vsync: this, length: tabs.length);
-    fToast.init(context);
   }
 
   @override
   Widget build(BuildContext context) {
-    var size = MediaQuery
-        .of(context)
-        .size;
+    var size = MediaQuery.of(context).size;
     final double itemHeight = (size.height - kToolbarHeight - 24) / 2;
     final double itemWidth = size.width / 2;
+    fToast.init(context);
 
     gridView(context, listProduct) {
       return GridView.count(
@@ -73,17 +74,22 @@ class _HomeScreenState extends State<HomeScreen>
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-            create: (_) =>
-            ProductBloc(
-              RepositoryProvider.of<ProductService>(context),
-            )
-              ..add(FindAllProductEvent())),
+            create: (_) => ProductBloc(
+                  RepositoryProvider.of<ProductService>(context),
+                )..add(FindAllProductEvent())),
       ],
       child: DefaultTabController(
         length: 2,
         child: Scaffold(
           appBar: AppBar(
-            title: const Text("Store api"),
+            title: BlocBuilder<UserBloc, UserState>(
+              builder: (context, state) {
+                if (state is UserInitial) {
+                  return Text("${state.user.username}");
+                }
+                return Container();
+              },
+            ),
             actions: [
               Padding(
                 padding: const EdgeInsets.all(10),
@@ -116,7 +122,7 @@ class _HomeScreenState extends State<HomeScreen>
             ),
           ),
           body:
-          BlocBuilder<ProductBloc, ProductState>(builder: (context, state) {
+              BlocBuilder<ProductBloc, ProductState>(builder: (context, state) {
             if (state is ListProductLoadingState) {
               return const Center(
                 child: CircularProgressIndicator(),
@@ -204,8 +210,7 @@ class _HomeScreenState extends State<HomeScreen>
   _toastSuccess(message) {
     fToast.removeCustomToast();
     return Container(
-      padding: const EdgeInsets.symmetric(
-          horizontal: 24.0, vertical: 12.0),
+      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(25.0),
         color: Colors.greenAccent,
@@ -213,11 +218,19 @@ class _HomeScreenState extends State<HomeScreen>
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.check, color: Colors.white,),
+          const Icon(
+            Icons.check,
+            color: Colors.white,
+          ),
           const SizedBox(
             width: 12.0,
           ),
-          Text("$message", style: const TextStyle(color: Colors.white,),),
+          Text(
+            "$message",
+            style: const TextStyle(
+              color: Colors.white,
+            ),
+          ),
         ],
       ),
     );

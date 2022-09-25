@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shopping_cart/bloc/user/bloc/user_bloc.dart';
+import 'package:shopping_cart/services/auth_service.dart';
+
+import '../model/user.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -59,12 +64,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       if (value!.isEmpty) {
                         return 'Please enter a valid email address';
                       }
-                      if (!value.contains('@')) {
-                        return 'Email is invalid, must contain @';
-                      }
-                      if (!value.contains('.')) {
-                        return 'Email is invalid, must contain .';
-                      }
                       return null;
                     },
                     decoration: InputDecoration(
@@ -94,9 +93,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       validator: (value) {
                         if (value!.isEmpty) {
                           return 'Please enter a password';
-                        }
-                        if (value.length > 6) {
-                          return '';
                         }
                         return null;
                       },
@@ -133,8 +129,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             }
                             String email = _emailController.text;
                             String password = _passwordController.text;
-                            print(email);
-                            print(password);
+                            BlocProvider.of<UserBloc>(context).add(
+                                UserLoginEvent(
+                                    username: email, password: password));
                             Navigator.pushNamed(context, '/home');
                           },
                         ),
